@@ -99,11 +99,7 @@ export function AdminTasksPage() {
     <div>
       <PageHeader
         title="任务管理"
-        subtitle={
-          selectedTenant
-            ? `${selectedTenant.name} · 发布任务、查看提交结果`
-            : "发布任务、查看提交结果"
-        }
+        subtitle={selectedTenant?.name}
         actions={
           <button
             type="button"
@@ -149,7 +145,7 @@ export function AdminTasksPage() {
       {tasksQuery.data && tasks.length === 0 ? (
         <EmptyState
           title="还没有任务"
-          description="先上传视频，再发布第一个标注任务。"
+          description="上传视频后即可发布任务。"
           icon={<ClipboardList size={22} />}
           action={
             <Link

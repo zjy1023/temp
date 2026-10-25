@@ -25,15 +25,17 @@ export function formatTimecode(ms: number): string {
 }
 
 export function formatHours(ms: number): string {
-  if (ms <= 0) return "0 小时";
-  const hours = ms / 3_600_000;
-  if (hours >= 1) {
-    const whole = Math.floor(hours);
-    const minutes = Math.round((hours - whole) * 60);
-    return minutes > 0 ? `${whole} 小时 ${minutes} 分` : `${whole} 小时`;
+  if (ms <= 0) return "0 秒";
+  const totalSeconds = Math.round(ms / 1000);
+  if (totalSeconds < 60) return `${totalSeconds} 秒`;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  if (totalMinutes < 60) {
+    const seconds = totalSeconds % 60;
+    return seconds > 0 ? `${totalMinutes} 分 ${seconds} 秒` : `${totalMinutes} 分`;
   }
-  const minutes = Math.max(1, Math.round(ms / 60_000));
-  return `${minutes} 分`;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return minutes > 0 ? `${hours} 小时 ${minutes} 分` : `${hours} 小时`;
 }
 
 export function formatDateTime(iso: string | null): string {

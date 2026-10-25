@@ -60,11 +60,7 @@ export function AdminVideosPage() {
     <div>
       <PageHeader
         title="视频库"
-        subtitle={
-          selectedTenant
-            ? `${selectedTenant.name} · 上传与管理任务视频`
-            : "上传与管理任务视频"
-        }
+        subtitle={selectedTenant?.name}
         actions={
           <>
             <input
@@ -123,7 +119,7 @@ export function AdminVideosPage() {
       {query.data && videos.length === 0 ? (
         <EmptyState
           title="还没有视频"
-          description="上传一个 MP4/WebM，或在本地运行脚本生成演示视频后上传。"
+          description="上传 MP4 或 WebM 开始使用。"
           icon={<FileVideo size={22} />}
         />
       ) : null}

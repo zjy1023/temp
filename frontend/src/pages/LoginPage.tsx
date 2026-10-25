@@ -10,19 +10,16 @@ const demoAccounts = [
     label: "平台管理员",
     email: "platform@example.com",
     password: "Platform123!",
-    hint: "跨租户查看与发布",
   },
   {
     label: "租户管理员",
     email: "admin.alpha@example.com",
     password: "Admin123!",
-    hint: "Alpha 租户管理",
   },
   {
     label: "标注员",
     email: "ann.alpha1@example.com",
     password: "Annotator123!",
-    hint: "领取与标注",
   },
 ];
 
@@ -55,45 +52,45 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
-      <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm md:grid-cols-[1.05fr_1fr]">
-        <section className="hidden flex-col justify-between bg-brand-50 p-10 md:flex">
-          <div>
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-white">
-              <FileVideo size={22} />
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-10">
+      <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] md:grid-cols-[1.1fr_1fr]">
+        <section className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-teal-900 p-10 text-white md:flex">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_55%)]" />
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur">
+              <FileVideo size={20} />
             </div>
-            <h1 className="mt-8 text-3xl font-semibold tracking-tight text-slate-900">
-              视频片段标注平台
-            </h1>
-            <p className="mt-3 max-w-sm text-sm leading-6 text-slate-600">
-              管理员发布任务，标注员在视频上标出有效片段，系统按提交日汇总有效时长。
-            </p>
+            <span className="text-base font-semibold tracking-wide">
+              视频片段标注
+            </span>
           </div>
-          <div className="space-y-3 text-sm text-slate-600">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-              多租户隔离，后端强制校验
+
+          <div className="relative z-10">
+            <div className="relative h-28">
+              <div className="absolute inset-x-0 top-6 h-1.5 rounded-full bg-white/15" />
+              <div className="absolute left-[6%] top-4 h-5 w-[22%] rounded bg-white/85" />
+              <div className="absolute left-[34%] top-4 h-5 w-[15%] rounded bg-white/55" />
+              <div className="absolute left-[55%] top-4 h-5 w-[30%] rounded bg-white/75" />
+              <div className="absolute left-[47%] top-0 h-14 w-0.5 bg-white" />
+              <div className="absolute left-[47%] top-0 h-3 w-3 -translate-x-1/2 rounded-full bg-white shadow" />
             </div>
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-              时间段不重叠，提交后锁定
+            <div className="mt-8 flex items-baseline gap-2 font-mono text-sm text-white/70">
+              <span>00:00:04.464</span>
+              <span className="text-white/30">/</span>
+              <span>00:01:00.000</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-              每日有效时长按提交日归集
-            </div>
+          </div>
+
+          <div className="relative z-10 flex items-center gap-2 text-[11px] text-white/40">
+            <span className="h-px w-6 bg-white/30" />
+            Asia/Shanghai
           </div>
         </section>
 
         <section className="p-8 sm:p-10">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-slate-900">登录</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              使用演示账号，或输入你自己的账号。
-            </p>
-          </div>
+          <h1 className="text-xl font-semibold text-slate-900">登录</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">
                 邮箱
@@ -146,9 +143,9 @@ export function LoginPage() {
 
           <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3">
             <div className="mb-2 text-xs font-medium text-slate-500">
-              演示账号（仅本地演示）
+              演示账号
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {demoAccounts.map((account) => (
                 <button
                   key={account.email}
@@ -158,13 +155,10 @@ export function LoginPage() {
                     setPassword(account.password);
                     setError(null);
                   }}
-                  className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs hover:bg-white"
+                  className="flex w-full flex-col rounded-lg px-2 py-1.5 text-left transition hover:bg-white"
                 >
-                  <span>
-                    <span className="font-medium text-slate-700">
-                      {account.label}
-                    </span>
-                    <span className="ml-2 text-slate-400">{account.hint}</span>
+                  <span className="text-xs font-medium text-slate-700">
+                    {account.label}
                   </span>
                   <span className="font-mono text-[11px] text-slate-500">
                     {account.email}

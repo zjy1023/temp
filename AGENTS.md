@@ -36,7 +36,7 @@
 11. `task.tenant_id` 必须等于 `video.tenant_id`；`assignment.tenant_id` 必须等于 `task.tenant_id`。不允许跨租户挂视频或领取。
 12. 草稿片段可带可选 `id`：已有 ID 更新、无 ID 新建、未出现删除；ID 必须属于当前 assignment。每个 assignment ≤ 500 段。
 13. `fps` 允许为空；优先 `avg_frame_rate`，回退 `r_frame_rate`；VFR/未知帧率时不做帧吸附。视频时长以服务端 `duration_ms` 为准。
-14. 不把 Hugging Face 大视频提交到仓库；使用 ffmpeg 合成演示视频；README 注明数据集来源和 MIT 许可。
+14. 不提交大型视频文件；使用 ffmpeg 生成演示视频；README 说明素材来源。
 
 ## 安全规则
 

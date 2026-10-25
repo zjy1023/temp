@@ -48,6 +48,8 @@ export function WorkspacePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const historyRef = useRef<EditorSegment[][]>([]);
   const initializedRef = useRef(false);
+  const revisionRef = useRef(0);
+  const savingRef = useRef(false);
 
   const query = useQuery({
     queryKey: ["assignment", assignmentId],
@@ -126,6 +128,7 @@ export function WorkspacePage() {
 
   const persistDraft = useCallback(
     async (currentSegments: EditorSegment[], currentVersion: number) => {
+      const revision = revisionRef.current;
       const result = await api.put<DraftOut>(
         `/annotator/assignments/${assignmentId}/draft`,
         {
@@ -134,29 +137,36 @@ export function WorkspacePage() {
         },
       );
       setVersion(result.version);
-      setSegments(fromApiSegments(result.segments));
-      setDirty(false);
-      setSaveState("saved");
+      if (revisionRef.current === revision) {
+        setSegments(fromApiSegments(result.segments));
+        setDirty(false);
+        setSaveState("saved");
+      } else {
+        setSaveState("unsaved");
+      }
       return result;
     },
     [assignmentId],
   );
 
   const saveDraft = useCallback(async () => {
-    if (!dirty || readOnly) return;
+    if (!dirty || readOnly || savingRef.current) return;
+    savingRef.current = true;
     setSaveState("saving");
     try {
       await persistDraft(segments, version);
     } catch (error) {
       if (error instanceof ApiError && error.code === "VERSION_CONFLICT") {
         setConflictOpen(true);
-        setSaveState("saved");
+        setSaveState("unsaved");
       } else {
         setSaveState("error");
         toast.error(
           error instanceof ApiError ? error.message : "保存失败，请重试",
         );
       }
+    } finally {
+      savingRef.current = false;
     }
   }, [dirty, persistDraft, readOnly, segments, version]);
 
@@ -177,6 +187,7 @@ export function WorkspacePage() {
 
   function commitSegments(next: EditorSegment[]) {
     pushHistory();
+    revisionRef.current += 1;
     setSegments(next);
     setDirty(true);
     setSaveState("unsaved");
@@ -238,6 +249,7 @@ export function WorkspacePage() {
   function undo() {
     const previous = historyRef.current.pop();
     if (!previous) return;
+    revisionRef.current += 1;
     setSegments(previous);
     setDirty(true);
     setSaveState("unsaved");
@@ -352,6 +364,10 @@ export function WorkspacePage() {
 
   async function handleSubmit() {
     if (readOnly) return;
+    if (savingRef.current) {
+      toast.info("正在保存草稿，请稍候再提交");
+      return;
+    }
     setSubmitting(true);
     try {
       let submitVersion = version;

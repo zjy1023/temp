@@ -16,9 +16,9 @@
 
 ## 截图
 
-![标注工作台](docs/screenshots/workspace.png)
+![登录](docs/screenshots/login.png)
 
-![ALOHA 500 MB 视频工作台](docs/screenshots/aloha-workspace.png)
+![标注工作台](docs/screenshots/workspace.png)
 
 ![工作量统计](docs/screenshots/stats.png)
 
@@ -80,16 +80,13 @@ docker compose down -v
 
 登录页也提供演示账号快捷填入。
 
-## 演示视频
+## 视频支持
 
-仓库不提交大视频。seed 会用 ffmpeg 生成一段 60 秒合成视频（1280×720、30 fps、H.264、约 22 MB），无需外网。
+seed 会用 ffmpeg 生成一段 60 秒演示视频（1280×720、30 fps、H.264），首次启动自动完成，无需外网。
 
-真实测试视频可从 Hugging Face 下载后上传：
+上传入口支持 MP4 / WebM，单文件最大 2 GB；服务端用 ffprobe 读取时长、帧率、分辨率与编码，生成封面并做 faststart 处理。
 
-- [ALOHA 双臂做咖啡](https://huggingface.co/datasets/lerobot/aloha_static_coffee)：约 500 MB，50 fps，640×480，AV1
-- [Push-T 推方块](https://huggingface.co/datasets/lerobot/pusht)：约 7 MB，10 fps，96×96，AV1
-
-也可以本地生成演示视频：
+重新生成演示视频：
 
 ```bash
 python scripts/generate_demo_video.py
@@ -108,7 +105,7 @@ pytest -q
 
 当前结果：**30 passed**。覆盖区间、时区、认证、租户隔离、并发领取、草稿、提交、统计、Range、上传探测。
 
-前端 E2E（需要后端和前端已启动；默认连 `http://127.0.0.1:5173`）：
+前端 E2E（需要后端和前端已启动；默认连 `http://localhost:5173`，可用 `E2E_BASE_URL` 覆盖）：
 
 ```bash
 cd frontend
@@ -122,7 +119,7 @@ $env:E2E_BASE_URL='http://127.0.0.1:8080'
 npx playwright test
 ```
 
-E2E 使用本机已安装的 Edge（`channel: "msedge"`），不需要额外下载浏览器。功能用例会创建一个以 `E2E` 开头的任务并提交，用于验证领取/标注/提交/统计；不会改动 seed 任务。另有 1 个截图用例，只读验证页面。
+E2E 默认使用本机 Edge（`channel: "msedge"`）。功能用例会创建一个以 `E2E` 开头的任务并提交，用于验证领取/标注/提交/统计；不会改动 seed 任务。另有 1 个截图用例，只读验证页面。
 
 Range 手工验收：
 
@@ -200,40 +197,37 @@ cp .env.example .env
 video-annotation-platform/
 ├── backend/            FastAPI、SQLAlchemy、Alembic、pytest
 ├── frontend/           React、Vite、Tailwind、Playwright
-├── docs/               题目理解、决策、架构、API、UI、测试、自审
+├── docs/               设计文档（范围、决策、架构、API、UI、测试）
 ├── skills/             项目 AI skills（domain/API/租户/UX/release）
 ├── scripts/            演示视频生成
 ├── storage/            运行时视频与封面（gitignore）
 ├── AGENTS.md           AI 编码硬约束
-└── report.md           题目要求的决策与验证报告
+└── report.md           交付报告
 ```
 
 ## 已知限制
 
-- **500 MB ALOHA 已实测**：通过 hf-mirror 下载 502,453,985 字节的 ALOHA 视频，Docker/Nginx 上传 39.2 s；ffprobe 识别为 1100 s、50 fps、640×480、AV1；在 Edge 中 `readyState=4`、无解码错误，跳转到 550 s 正常，Range 206。
-- **Safari + AV1 未验证**：测试数据集是 AV1；推荐 Chrome/Edge/Firefox。Safari 视版本/硬件，可能不支持。`TRANSCODE_TO_H264=true` 可开启 H.264 转码，但会明显拖慢大文件上传。
-- **500 MB 上传耗时依赖网络**：本机 39.2 s；慢网络下需要更长超时，nginx 已设 300 s。
-- 本期不做：任务提交后退回/重开、评论/标签、AI 自动分段、多人协作、URL 导入视频、移动端专门适配、分页、审计日志。
-- 列表按 `created_at DESC` 返回，不分页；演示数据量小。
+- 浏览器：Chrome / Edge / Firefox；AV1 播放取决于浏览器与系统解码能力，Safari 建议使用 H.264 源。
+- 上传：单文件最大 2 GB；大文件耗时取决于网络，Nginx 超时 300 s。
+- 列表按 `created_at DESC` 返回，不分页。
 - 时区固定为 `Asia/Shanghai`，修改配置会改变历史日归集。
+- 单个任务最多 500 个片段。
+- 本期不含：任务退回/重开、评论/标签、AI 自动分段、多人协作、URL 导入视频、移动端专门适配、审计日志。
 - Docker 基础镜像需要能访问 Docker Hub 或配置镜像加速。
 
-## 数据集与许可
+## 素材与许可
 
-- LeRobot ALOHA / Push-T 数据集为 MIT 许可。
-- 本项目不重新分发这些视频；真实视频由使用者自行下载并上传。
-- 仓库内置的演示视频由 ffmpeg `testsrc2` 生成，不涉及第三方版权。
+演示视频由 ffmpeg `testsrc2` 合成，不涉及第三方素材；上传视频的版权与使用许可由上传方负责。
 
 ## 文档
 
-- [文档索引](docs/README.md)
-- [题目理解与范围](docs/00-overview.md)
+- [产品范围](docs/00-overview.md)
 - [决策记录](docs/01-decisions.md)
 - [架构设计](docs/02-architecture.md)
 - [实施计划](docs/03-implementation-plan.md)
 - [测试计划](docs/04-test-plan.md)
 - [UI/UX 规格](docs/06-ui-spec.md)
 - [API 契约](docs/07-api-contract.md)
-- [开工前自审](docs/08-self-review.md)
+- [设计自审](docs/08-self-review.md)
 - [AI 协作与验证](docs/05-ai-collaboration.md)
 - [交付报告](report.md)

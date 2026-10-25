@@ -11,24 +11,24 @@
 | D01 | 技术栈 | 前端 React + TypeScript + Vite；后端 FastAPI + SQLAlchemy 2.0 + Alembic；数据库 PostgreSQL 16；视频用 ffmpeg/ffprobe；部署用 Docker Compose | 开发速度快，视频 Range、Cookie 鉴权、时区聚合都好实现；PostgreSQL 支持行锁和部分唯一索引 |
 | D02 | 任务领取模型 | **一人独占领取**；领取即锁定；管理员可重新分配；标注员提交前可释放 | 输出是“每个已提交任务的时间段列表”，单份提交口径最清楚；避免多份提交的统计歧义 |
 | D03 | 管理员租户范围 | **平台管理员 + 租户管理员**；平台管理员 `tenant_id` 为空，可跨租户；租户管理员强制本租户 | “发布任务时指定租户”需要跨租户能力；同时演示真正的租户隔离 |
-| D04 | 交付范围 | **完整打磨**：MVP + E2E + 500 MB 压测 + 键盘操作 + 视觉打磨 + 完整 report.md | 题目明确说 UX 计分，且同账号另一题把“验证与交付”单列 10 分 |
+| D04 | 交付范围 | **完整打磨**：MVP + E2E + 500 MB 压测 + 键盘操作 + 视觉打磨 + 完整 report.md | 视觉与操作体验是产品核心指标，验证与交付同等重要 |
 | D05 | 提交后能否修改 | **提交即锁定**，不支持退回/重开 | 统计稳定；避免历史日统计被追溯修改；report.md 好解释 |
 | D06 | 空提交 | **允许 0 段提交**，但 API 必须要求 `confirm_empty=true`，前端二次确认 | “没有有效片段”是合法标注结果；显式确认避免误操作 |
-| D07 | 视频来源 | **本地上传**；项目内置 ffmpeg 生成的演示视频；不做 URL 导入 | 不依赖外部链接、不引入 SSRF；真实 HF 视频由使用者下载后上传 |
+| D07 | 视频来源 | **本地上传**；项目内置 ffmpeg 生成的演示视频；不做 URL 导入 | 不依赖外部链接、不引入 SSRF；上传入口接受本地视频文件 |
 | D08 | 部署形态 | **Docker Compose 一键启动** + 本地 dev 模式 | 评审按 README 就能跑；本地 dev 保持开发效率 |
 
 ## 2. 默认项（开发前可改）
 
 | ID | 问题 | 默认决策 | 理由 / 备注 |
 |---|---|---|---|
-| D09 | 重叠判定 | 半开区间 `[start_ms, end_ms)`；`start == prev_end` 不算重叠 | 同账号另一道题明确采用此语义；避免 1 ms 缝隙争议 |
+| D09 | 重叠判定 | 半开区间 `[start_ms, end_ms)`；`start == prev_end` 不算重叠 | 半开区间避免 1 ms 缝隙争议，首尾相接可自然表达 |
 | D10 | 时间精度 | 数据库存整数毫秒；前端按视频 fps 吸附到帧；后端只要求 `end_ms > start_ms` | ALOHA 50 fps = 20 ms/帧，Push-T 10 fps = 100 ms/帧，不能假设 30 fps |
 | D11 | 业务时区 | `APP_TIMEZONE=Asia/Shanghai`，可配置；`submitted_at` 存 UTC | 中国团队；提交日归集必须稳定；时区做成配置而不是硬编码 |
 | D12 | 认证方式 | seed 演示账号，不做自助注册；HttpOnly Cookie 会话；`SameSite=Lax`；写操作校验 `Origin`；密码用 Argon2/bcrypt | `<video>` 标签无法方便地加 Authorization 头，Cookie 最适合视频流鉴权 |
-| D13 | 界面语言 | 中文；桌面优先，移动端不崩即可 | 题目和用户都是中文；标注员在桌面浏览器工作 |
-| D14 | 项目位置 | `d:\桌面\新建文件夹\video-annotation-platform\` 子目录 | 与题目文档分开，便于初始化和后续推送 |
-| D15 | 统计粒度 | 必做：按天汇总所有已提交任务；可选：按标注员 breakdown、CSV 导出 | README 只要求“每天的有效时长”；按人统计是加分项，不是核心 |
-| D16 | 视频编码 | 接受 MP4/WebM；AV1 可播放；推荐 Chrome/Edge；Safari 兼容性写进 README；可选 H.264 转码 | 数据集测试视频是 AV1，但评审浏览器未知；准备兜底方案 |
+| D13 | 界面语言 | 中文；桌面优先，移动端不崩即可 | 用户与标注员以中文为主；标注员在桌面浏览器工作 |
+| D14 | 项目位置 | `d:\桌面\新建文件夹\video-annotation-platform\` 子目录 | 独立项目目录，便于初始化和推送 |
+| D15 | 统计粒度 | 必做：按天汇总所有已提交任务；可选：按标注员 breakdown、CSV 导出 | 每天有效时长是核心输出；按人统计是增强项 |
+| D16 | 视频编码 | 接受 MP4/WebM；AV1 可播放；推荐 Chrome/Edge；Safari 兼容性写进 README；可选 H.264 转码 | 视频常见 AV1，不同浏览器解码能力不同；提供兜底转码 |
 | D17 | 释放/重分配 | 标注员提交前可释放；管理员可重新分配未提交任务；已提交不可动 | 独占领取后需要处理“领了不做”的情况，否则任务会卡死 |
 | D18 | 视频时长 | 上传后 `ffprobe` 服务端探测；客户端只展示 | 防止客户端伪造超出视频边界的片段 |
 | D19 | 上传限制 | 最大 2 GB；流式写盘；1 MB 分块；文件存 `storage/videos`；生成封面 | 500 MB 测试视频要能上传；不能整文件读进内存 |
@@ -41,8 +41,8 @@
 | D26 | 输入限制 | 任务标题 1–120 字符；描述 ≤ 2000 字符；每个 assignment ≤ 500 段；JSON 请求 ≤ 1 MB；上传 ≤ 2 GB | 防止误操作和超大 payload；错误要明确，不静默截断 |
 | D27 | 帧率与 VFR | `fps` 允许为空；优先用 `avg_frame_rate`，回退 `r_frame_rate`；VFR 或未知帧率时不做帧吸附，只显示毫秒 | 50 fps / 10 fps 差异大；VFR 用固定帧长会标错位置 |
 | D28 | 视频时长权威 | 以服务端 `ffprobe` 的 `duration_ms` 为准；浏览器 `video.duration` 只用于展示；差异 > 1000 ms 时前端提示 | 客户端时长可伪造，且不同浏览器解析可能略有差异 |
-| D29 | 数据集与仓库 | 不把 Hugging Face 视频提交到仓库；仓库内置 ffmpeg 生成的合成演示视频；README 注明数据集来源和 MIT 许可；真实视频由使用者下载后上传 | 避免 500 MB 仓库、许可证和网络依赖；演示仍可离线跑通 |
-| D30 | AI rules / skills | `AGENTS.md` 作为硬规则；M1 创建并实际使用项目 skills（domain-review / api-contract / tenant-isolation-review / ux-review / release-check）；report.md 只写实际用过的 | 题目明确要求说明 rules 和 skills；不能到最后一刻编造 |
+| D29 | 数据集与仓库 | 仓库只保存 ffmpeg 生成的合成演示视频；大型视频不进入版本库 | 保持仓库轻量、无第三方版权与网络依赖；演示可离线跑通 |
+| D30 | AI rules / skills | `AGENTS.md` 作为硬规则；M1 创建并实际使用项目 skills（domain-review / api-contract / tenant-isolation-review / ux-review / release-check）；report.md 只写实际用过的 | 交付要求说明 rules 和 skills；不能到最后一刻编造 |
 
 ## 3. 被拒绝的方案
 
@@ -51,13 +51,13 @@
 | Next.js 全栈 | 一套 TS 很省事，但视频 Range、后台探测、Cookie 会话和测试边界不如前后端分离清晰；团队也更熟悉 FastAPI |
 | SQLite | 零依赖，但并发领取、`SELECT FOR UPDATE`、时区聚合和部分唯一索引的能力弱；Docker 已经可用，Postgres 更稳 |
 | 一个任务多人领取 | 输出“每个已提交任务的时间段列表”会变成“取哪一份提交”，统计和权限都变复杂；本期不做 |
-| 自助注册 | 题目只要求登录；seed 账号足够演示，注册会引入邮箱验证、密码找回等无谓范围 |
+| 自助注册 | 需求只包含登录；seed 账号足够演示，注册会引入邮箱验证、密码找回等无谓范围 |
 | 提交后可编辑/退回 | 会让“提交日”和“有效时长”产生追溯变化；本期锁定，作为已知限制写进 report |
 | 至少 1 段才能提交 | 视频可能确实没有可用片段；强制至少 1 段会逼标注员造假 |
 | 用 UTC 归日 | 中国团队晚间提交会跑到第二天；必须按业务时区归日 |
-| 前端过滤租户 | 直接调 API 就穿透；题目明确要求后端隔离 |
+| 前端过滤租户 | 直接调 API 就穿透；需求要求后端隔离 |
 | 片段存一个 JSON 字段 | 无法做行级约束、无法按片段查询、统计和审计都困难 |
-| 微服务/Kafka/Redis/K8s | 题目是小型全栈闭环，引入这些只会增加启动难度和故障面 |
+| 微服务/Kafka/Redis/K8s | 本期是小型全栈闭环，引入这些只会增加启动难度和故障面 |
 | URL 导入视频 | 演示方便，但要处理 SSRF、跨域、外部链接失效、下载进度；本期只做本地上传 |
 
 ## 4. 待验证的假设
@@ -66,12 +66,12 @@
 
 | 假设 | 怎么验证 | 如果不成立 |
 |---|---|---|
-| 评审环境有 Docker，或能按 README 本地启动 | 在干净目录按 README 走一遍；检查 Docker daemon | 提供本地 dev 的详细步骤和版本要求 |
-| 评审使用 Chrome/Edge/Firefox，AV1 可播放 | 用 Chrome + Safari（如可用）各测一次 ALOHA 视频 | 提供 H.264 转码开关或预转码说明 |
-| 500 MB 视频能通过上传接口 | 用 ALOHA 文件实测上传、播放、拖动；观察服务端内存 | 调整 nginx `client_max_body_size`、`proxy_request_buffering`、后端分块大小 |
+| 运行环境有 Docker，或能按 README 本地启动 | 在干净目录按 README 走一遍；检查 Docker daemon | 提供本地 dev 的详细步骤和版本要求 |
+| 浏览器可播放 H.264；AV1 取决于系统解码能力 | Chrome/Edge 各测一次大视频 | 提供 H.264 转码开关或预转码说明 |
+| 500 MB 视频能通过上传接口 | 用 500 MB 样本实测上传、播放、拖动；观察服务端内存 | 调整 nginx `client_max_body_size`、`proxy_request_buffering`、后端分块大小 |
 | `ffprobe` 在 Docker 镜像和本机都可用 | 构建镜像后执行 `ffprobe -version` | 在 Dockerfile 安装 ffmpeg；README 写明本机依赖 |
 | 业务时区固定为 Asia/Shanghai | 用 23:59 和 00:01 的提交测试统计归属 | 改成环境变量，按租户配置 |
-| “一人独占”符合评审预期 | 在 report.md 里明确写出理由和备选方案 | 如果评审要求多人，按 assignment 维度扩展，不改核心规则 |
+| “一人独占”符合使用预期 | 在 report.md 里明确写出理由和备选方案 | 如需多人协作，按 assignment 维度扩展，不改核心规则 |
 
 ## 5. 决策变更规则
 

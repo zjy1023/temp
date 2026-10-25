@@ -77,8 +77,8 @@ export function AppShell() {
             );
           })}
         </nav>
-        <div className="border-t border-slate-200 p-4 text-xs text-slate-400">
-          每日标注 · 按提交日汇总
+        <div className="border-t border-slate-200 p-4 font-mono text-[11px] text-slate-400">
+          Asia/Shanghai
         </div>
       </aside>
 

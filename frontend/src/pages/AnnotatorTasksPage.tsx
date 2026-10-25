@@ -67,10 +67,7 @@ export function AnnotatorTasksPage() {
 
   return (
     <div>
-      <PageHeader
-        title="我的任务"
-        subtitle="本租户下的可领取、进行中和已提交任务。"
-      />
+      <PageHeader title="我的任务" />
 
       <div className="mb-5 flex gap-1 border-b border-slate-200">
         {tabs.map((item) => (
@@ -107,10 +104,7 @@ export function AnnotatorTasksPage() {
       {query.data ? (
         <>
           {tab === "available" && available.length === 0 ? (
-            <EmptyState
-              title="暂时没有可领取的任务"
-              description="管理员发布新任务后会出现在这里。"
-            />
+            <EmptyState title="暂时没有可领取的任务" />
           ) : null}
           {tab === "available" && available.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -155,7 +149,6 @@ export function AnnotatorTasksPage() {
           {tab === "in_progress" && inProgress.length === 0 ? (
             <EmptyState
               title="没有进行中的任务"
-              description="去“可领取”里接一个任务开始标注。"
             />
           ) : null}
           {tab === "in_progress" && inProgress.length > 0 ? (
@@ -192,7 +185,6 @@ export function AnnotatorTasksPage() {
           {tab === "submitted" && submitted.length === 0 ? (
             <EmptyState
               title="还没有已提交的任务"
-              description="提交后的任务会出现在这里，可随时查看只读结果。"
             />
           ) : null}
           {tab === "submitted" && submitted.length > 0 ? (

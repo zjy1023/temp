@@ -231,9 +231,6 @@ export function Timeline({
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-slate-900">时间轴</span>
-          <span className="text-xs text-slate-500">
-            拖拽空白创建片段，拖两端调整，拖中间移动
-          </span>
         </div>
         <div className="flex items-center gap-1">
           <button

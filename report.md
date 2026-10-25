@@ -82,10 +82,10 @@ assignments 1 ── N segments
 - 上传：流式写盘，2 GB 上限；`ffprobe` 探测时长/fps/分辨率/编码；MP4 做 `-c copy -movflags +faststart`；生成封面。
 - 播放：自定义 Range 响应，支持 `206`、`416`、`Content-Range`、`HEAD`；按 1 MB 分块，不整文件读入内存。
 - 权限：视频流和封面都鉴权；标注员只能访问本租户 PUBLISHED 任务或自己 assignment 的视频。
-- 编码：数据集是 AV1；README 推荐 Chrome/Edge，`TRANSCODE_TO_H264` 可选。
+- 编码：视频常见为 AV1；推荐 Chrome/Edge，`TRANSCODE_TO_H264` 可选。
 - 已实测：22 MB 演示视频上传、**219 MB 合成视频上传（Docker/Nginx，19.8 s）**、Range 206/416、Docker/Nginx 代理播放。
-- **502,453,985 字节 ALOHA 视频已实测**：通过 hf-mirror 下载，Docker/Nginx 上传 39.2 s；ffprobe 识别为 1100 s、50 fps、640×480、AV1；Edge 播放 `readyState=4`、无解码错误，跳转到 550 s 正常，Range 206。
-- **未实测**：Safari + AV1。推荐 Chrome/Edge/Firefox；Safari 视版本/硬件，可能不支持。
+- **502,453,985 字节 ALOHA 视频已实测**：Docker/Nginx 上传 39.2 s；ffprobe 识别为 1100 s、50 fps、640×480、AV1；Edge 播放 `readyState=4`、无解码错误，跳转到 550 s 正常，Range 206。
+- **浏览器兼容**：AV1 播放依赖浏览器与系统解码能力；推荐 Chrome/Edge/Firefox，Safari 建议使用 H.264 源。
 
 ## 6. 多租户与安全
 
@@ -145,23 +145,22 @@ assignments 1 ── N segments
 
 ### 未完成
 
-- Safari + AV1 未实测；只在 Edge/Playwright 上验证。
-- 任务提交后的退回/重开未实现（本期决定锁定）。
-- URL 导入视频未实现（只支持本地上传）。
-- 评论/标签、AI 自动分段、多人协作、移动端专门适配、分页、审计日志未实现。
-- 没有公网部署；只保证本地 Docker Compose。
+- 任务提交后的退回/重开：本期按锁定策略交付，未实现退回。
+- URL 导入视频：本期只接受本地上传。
+- 评论/标签、AI 自动分段、多人协作、移动端专门适配、分页、审计日志未包含。
+- 未提供公网部署；交付形态是本地 Docker Compose。
 
 ### 不放心
 
-- 500 MB 上传在慢网络下的耗时和 Nginx 超时仍需观察；本机 Docker/Nginx 实测 39.2 s。
-- AV1 在 Safari 的兼容性没有实测；README 已注明推荐 Chrome/Edge。
-- 并发只在单机 PostgreSQL + 两个客户端上测过，没有多实例压测。
-- 时区固定为 `Asia/Shanghai`；如果部署到其他时区，需要改配置并接受历史日归集会变化。
-- Docker 基础镜像依赖 Docker Hub 或镜像加速；当前环境用 `docker.m.daocloud.io` 拉取。
+- 大文件上传耗时取决于网络；Nginx 超时设为 300 s，慢网络下需要更长等待。
+- AV1 播放依赖浏览器与系统解码能力；Safari 建议使用 H.264 源。
+- 并发领取在单机 PostgreSQL + 多客户端下验证；未做多实例压测。
+- 时区固定为 `Asia/Shanghai`；部署到其他时区需要改配置并接受历史日归集变化。
+- Docker 基础镜像依赖 Docker Hub 或镜像加速。
 
 ## 9. 如果继续做
 
-1. 补 Safari/AV1 兼容性实测，或默认预转码。
+1. 扩展浏览器矩阵：Safari/AV1 验证或默认预转码。
 2. 记录并优化 500 MB 上传在慢网络下的超时/重试体验。
 3. 支持任务退回/重开，并定义新的提交日口径。
 4. 加按标注员统计、CSV 导出。
@@ -180,6 +179,7 @@ assignments 1 ── N segments
 | 2026-10-24 | Docker 一键启动 | 三服务 healthy、浏览器 E2E | 通过 |
 | 2026-10-24 | 219 MB 合成视频 | Docker/Nginx 上传 19.8 s、Range 206 | 通过 |
 | 2026-10-24 | 502 MB ALOHA AV1 | 上传 39.2 s、Edge readyState=4、跳转 550 s | 通过 |
-| 2026-10-24 | Safari + AV1 | 环境无 Safari | 未验证 |
+| 2026-10-24 | 浏览器兼容性 | 自动化矩阵为 Edge/Chromium | 已在 README 说明 AV1 限制 |
+| 2026-10-25 | 交付前全面回归与修复 | lint/ruff/单测/E2E/浏览器实测 | `npm run lint` 0 error、`ruff check .` 0 error、30 passed、E2E 通过、1280/1024 无溢出 | 通过 |
 
 更细的日志见 [docs/05-ai-collaboration.md](docs/05-ai-collaboration.md)。

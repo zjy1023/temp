@@ -85,7 +85,7 @@ export function AdminTaskDetailPage() {
 
       <PageHeader
         title={data.task.title}
-        subtitle={data.task.description ?? "任务详情与提交结果"}
+        subtitle={data.task.description ?? undefined}
         actions={<StatusBadge status={data.task.status} />}
       />
 

@@ -61,11 +61,7 @@ export function AdminStatsPage() {
     <div>
       <PageHeader
         title="工作量统计"
-        subtitle={
-          selectedTenant
-            ? `${selectedTenant.name} · 按提交日汇总已提交任务的有效时长`
-            : "按提交日汇总已提交任务的有效时长"
-        }
+        subtitle={selectedTenant?.name}
       />
 
       <div className="mb-5 flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4">
@@ -192,13 +188,12 @@ export function AdminStatsPage() {
                 每日有效时长
               </h2>
               <span className="text-xs text-slate-500">
-                峰值标注员 {peakAnnotators} 人
+                单日最多 {peakAnnotators} 名标注员
               </span>
             </div>
             {totalDuration === 0 ? (
               <EmptyState
-                title="所选区间没有已提交任务"
-                description="换一个日期范围，或等待标注员提交任务。"
+                title="所选区间暂无已提交任务"
                 icon={<BarChart3 size={22} />}
               />
             ) : (

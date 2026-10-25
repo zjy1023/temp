@@ -87,9 +87,6 @@ export function SegmentList({
       {segments.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
           <p className="text-sm font-medium text-slate-700">还没有片段</p>
-          <p className="mt-1 text-xs text-slate-500">
-            拖动时间轴选择片段，或按 I / O 打点。
-          </p>
         </div>
       ) : (
         <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
