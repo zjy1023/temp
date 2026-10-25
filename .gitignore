@@ -1,0 +1,29 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+coverage/
+htmlcov/
+
+# node
+node_modules/
+dist/
+playwright-report/
+test-results/
+e2e-artifacts/
+
+# runtime data
+storage/
+*.log
+
+# os
+.DS_Store
+Thumbs.db
